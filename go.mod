@@ -1,3 +1,5 @@
-module github.com/FalahFaj/projek_funcpro_kel12
+module projek_funcpro_kel12
 
 go 1.25.0
+
+require github.com/joho/godotenv v1.5.1
