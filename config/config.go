@@ -35,9 +35,14 @@ func LoadConfig() (string, error) {
 		return "", err
 	}
 
+	sslmode, err := cariEnv("DB_SSL_MODE")
+	if err != nil {
+		return "", err
+	}
+
 	konek := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s",
-		host, port, user, pass, dbname)
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		host, port, user, pass, dbname, sslmode)
 
 	return konek, nil
 }
