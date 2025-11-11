@@ -20,17 +20,5 @@ func main() {
 	defer db.Close()
 	log.Println("Koneksi database berhasil.")
 
-	// 3. Inisialisasi Layer (Wiring) - Contoh untuk User
-	// userRepo := repository.NewUserRepository(db)
-	// userService := service.NewUserService(userRepo)
-	// userHandler := handler.NewUserHandler(userService)
-
-	// 4. Setup Router & Jalankan Server
-	// router := http.NewServeMux()
-	// router.HandleFunc("/users", userHandler.CreateUser)
-
 	log.Println("Server berjalan di port :8080")
-	// if err := http.ListenAndServe(":8080", router); err != nil {
-	// 	log.Fatalf("Gagal menjalankan server: %v", err)
-	// }
 }
