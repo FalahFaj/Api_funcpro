@@ -3,17 +3,17 @@
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    nama VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL CHECK (role IN ('petani', 'pembeli')),
+    role VARCHAR(50) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE TABLE produk (
     id SERIAL PRIMARY KEY,
     petani_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    nama_produk VARCHAR(255) NOT NULL,
     deskripsi TEXT,
     harga DECIMAL(12, 2) NOT NULL CHECK (harga >= 0),
     stok INT NOT NULL DEFAULT 0 CHECK (stok >= 0),

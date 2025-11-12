@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 func LoadConfig() (string, error) {
@@ -53,4 +54,8 @@ func cariEnv(key string) (string, error) {
 		return "", fmt.Errorf("environment variable %s tidak diatur atau kosong", key)
 	}
 	return value, nil
+}
+
+func LoadJWTSecret() (string, error) {
+	return cariEnv("JWT_SECRET")
 }
