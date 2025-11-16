@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	Buat(ctx context.Context,user *model.User) (int64, error)
+	Buat(ctx context.Context, user *model.User) (int64, error)
 	GetUserById(ctx context.Context, id int64) (*model.User, error)
 	GetUserByEmail(ctx context.Context, mail string) (*model.User, error)
 }
@@ -20,7 +20,7 @@ func NewUserRepository(db *sql.DB) *userRepository {
 	return &userRepository{db}
 }
 
-func (r *userRepository) Buat(ctx context.Context,user *model.User) (int64, error) {
+func (r *userRepository) Buat(ctx context.Context, user *model.User) (int64, error) {
 	var id int64
 	query := `INSERT INTO users (nama, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id`
 
@@ -47,7 +47,7 @@ func (r *userRepository) GetUserById(ctx context.Context, id int64) (*model.User
 	return &user, nil
 }
 
-func (r *userRepository) GetUserByEmailctx(ctx context.Context,email string) (*model.User, error) {
+func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
 	var user model.User
 
 	query := `SELECT id, nama, email, password, role, created_at FROM users WHERE email = $1`

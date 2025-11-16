@@ -26,12 +26,10 @@ func main() {
 		log.Fatalf("Gagal memuat JWT secret: %v", err)
 	}
 
-	// Inisialisasi semua layer
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo, jwtSecret)
 	userHandler := handler.NewUserHandler(userService)
 
-	// Mendaftarkan rute untuk user
 	http.HandleFunc("/register", userHandler.Register)
 	http.HandleFunc("/login", userHandler.Login)
 

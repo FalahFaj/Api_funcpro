@@ -11,6 +11,8 @@ type ProdukRepository interface {
 	GetAllProduk(ctx context.Context) (*model.Produk)
 	GetProdukById(ctx context.Context, id int64) (*model.Produk, error)
 	GetProdukByName(ctx context.Context, name string) (*model.Produk, error)
+	Update(ctx context.Context, produk *model.Produk) error
+	Delete(ctx context.Context, id int64) error
 }
 
 type produkRepository struct {
