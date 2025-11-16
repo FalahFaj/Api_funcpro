@@ -25,7 +25,7 @@ func (h *Userhandler) Register(balas http.ResponseWriter, terima *http.Request) 
 		responError(balas, http.StatusBadRequest, "Gagal membaca input")
 		return
 	}
-	user, err := h.userService.Register(input)
+	user, err := h.userService.Register(terima.Context(), input)
 	if err != nil {
 		responError(balas, http.StatusBadRequest, err.Error())
 		return
@@ -43,7 +43,7 @@ func (h *Userhandler) Login(balas http.ResponseWriter, terima *http.Request) {
 		responError(balas, http.StatusBadRequest, "Format tidak sesuai")
 	}
 
-	token, err := h.userService.Login(input)
+	token, err := h.userService.Login(terima.Context(), input)
 	if err != nil {
 		responError(balas, http.StatusUnauthorized, err.Error())
 		return

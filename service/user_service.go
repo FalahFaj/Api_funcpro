@@ -6,7 +6,7 @@ import (
 	"projek_funcpro_kel12/model"
 	"projek_funcpro_kel12/repository"
 	"time"
-
+	"context"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -29,9 +29,9 @@ type JWT struct {
 }
 
 type UserService interface {
-	Register(input RegisterInput) (*model.User, error)
-	Login(input LoginInput) (string, error)
-	GetUserById(id int64) (*model.User, error)
+	Register(ctx context.Context, input RegisterInput) (*model.User, error)
+	Login(ctx context.Context, input LoginInput) (string, error)
+	GetUserById(ctx context.Context, id int64) (*model.User, error)
 }
 
 type userService struct {
@@ -43,7 +43,7 @@ func NewUserService(userRepo repository.UserRepository, jwtToken string) *userSe
 	return &userService{userRepo, jwtToken}
 }
 
-func (s *userService) Register(input RegisterInput) (*model.User, error) {
+func (s *userService) Register(ctx context.Context, input RegisterInput) (*model.User, error) {
 	if input.Nama == "" || input.Email == "" || input.Password == "" || input.Role == "" {
 		return nil, errors.New("tidak boleh ada yang kosong")
 	}
@@ -52,7 +52,7 @@ func (s *userService) Register(input RegisterInput) (*model.User, error) {
 		return nil, errors.New("role harus pembeli atau petani")
 	}
 
-	sudahTerdaftar, err := s.userRepo.GetUserByEmail(input.Email)
+	sudahTerdaftar, err := s.userRepo.GetUserByEmail(ctx, input.Email)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			return nil, err
@@ -70,7 +70,7 @@ func (s *userService) Register(input RegisterInput) (*model.User, error) {
 		Role:     input.Role,
 	}
 
-	id, err := s.userRepo.Buat(user)
+	id, err := s.userRepo.Buat(ctx, user)
 	if err != nil {
 		return nil, err
 	}
@@ -81,11 +81,11 @@ func (s *userService) Register(input RegisterInput) (*model.User, error) {
 
 }
 
-func (s *userService) Login(input LoginInput) (string, error) {
+func (s *userService) Login(ctx context.Context,input LoginInput) (string, error) {
 	if input.Email == "" || input.Password == "" {
 		return "", errors.New("tidak boleh ada yang kosong")
 	}
-	user, err := s.userRepo.GetUserByEmail(input.Email)
+	user, err := s.userRepo.GetUserByEmail(ctx, input.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return "", errors.New("email tidak ditemukan")
@@ -114,8 +114,8 @@ func (s *userService) Login(input LoginInput) (string, error) {
 	return tokenString, nil
 }
 
-func (s *userService) GetUserById(id int64) (*model.User, error) {
-	user, err := s.userRepo.GetUserById(id)
+func (s *userService) GetUserById(ctx context.Context, id int64) (*model.User, error) {
+	user, err := s.userRepo.GetUserById(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New("user tidak ditemukan")
