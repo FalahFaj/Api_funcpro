@@ -8,6 +8,6 @@ type Produk struct {
 	NamaProduk string    `json:"nama_produk" db:"nama_produk"`
 	Deskripsi  string    `json:"deskripsi" db:"deskripsi"`
 	Harga      int64     `json:"harga" db:"harga"`
-	Stok       int64     `json:"stok" db:"stok"`
+	Stok       int       `json:"stok" db:"stok"`
 	CreatedAt  time.Time `json:"created_at" db:"created_at"`
 }

@@ -10,6 +10,8 @@ type UserRepository interface {
 	Buat(ctx context.Context, user *model.User) (int64, error)
 	GetUserById(ctx context.Context, id int64) (*model.User, error)
 	GetUserByEmail(ctx context.Context, mail string) (*model.User, error)
+	Update(ctx context.Context, user *model.User) error
+	Delete(ctx context.Context, id int64) error
 }
 
 type userRepository struct {
@@ -59,4 +61,31 @@ func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 	}
 
 	return &user, nil
+}
+
+func (r *userRepository) Update(ctx context.Context, user *model.User) error {
+	query := `UPDATE users SET nama = $1, email = $2, password = $3, role = $4 WHERE id = $5`
+
+	hasil, err := r.db.ExecContext(ctx, query, user.Nama, user.Email, user.Password, user.Role, user.Id)
+
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected, _ := hasil.RowsAffected(); rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
+func (r *userRepository) Delete(ctx context.Context, id int64) error {
+	query := `DELETE FROM users WHERE id = $1`
+
+	_, err := r.db.ExecContext(ctx, query, id)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

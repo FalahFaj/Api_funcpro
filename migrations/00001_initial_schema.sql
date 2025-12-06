@@ -15,7 +15,7 @@ CREATE TABLE produk (
     petani_id INT NOT NULL,
     nama_produk VARCHAR(255) NOT NULL,
     deskripsi TEXT,
-    harga DECIMAL(12, 2) NOT NULL CHECK (harga >= 0),
+    harga INT NOT NULL CHECK (harga >= 0),
     stok INT NOT NULL DEFAULT 0 CHECK (stok >= 0),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     CONSTRAINT fk_petani
@@ -27,7 +27,7 @@ CREATE TABLE produk (
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     pembeli_id INT NOT NULL,
-    total_harga DECIMAL(12, 2) NOT NULL CHECK (total_harga >= 0),
+    total_harga INT NOT NULL CHECK (total_harga >= 0),
     status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'cancelled')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     CONSTRAINT fk_pembeli
@@ -41,7 +41,7 @@ CREATE TABLE order_items (
     order_id INT NOT NULL,
     produk_id INT NOT NULL,
     jumlah INT NOT NULL CHECK (jumlah > 0),
-    harga_ketika_dibeli DECIMAL(12, 2) NOT NULL, 
+    harga_ketika_dibeli INT NOT NULL, 
     CONSTRAINT fk_order
         FOREIGN KEY(order_id) 
         REFERENCES orders(id)

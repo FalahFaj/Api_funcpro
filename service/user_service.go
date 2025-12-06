@@ -32,6 +32,8 @@ type UserService interface {
 	Register(ctx context.Context, input RegisterInput) (*model.User, error)
 	Login(ctx context.Context, input LoginInput) (string, error)
 	GetUserById(ctx context.Context, id int64) (*model.User, error)
+	UpdateUser(ctx context.Context, id int64, input RegisterInput) (*model.User, error)
+	DeleteUser(ctx context.Context, id int64) error
 }
 
 type userService struct {
@@ -123,4 +125,31 @@ func (s *userService) GetUserById(ctx context.Context, id int64) (*model.User, e
 		return nil, err
 	}
 	return user, nil
+}
+
+func (s *userService) UpdateUser(ctx context.Context, id int64, input RegisterInput) (*model.User, error) {
+	user, err := s.userRepo.GetUserById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Nama = input.Nama
+	user.Email = input.Email
+	user.Password = input.Password
+	user.Role = input.Role
+
+	err = s.userRepo.Update(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (s *userService) DeleteUser(ctx context.Context, id int64) error {
+	err := s.userRepo.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -30,8 +30,38 @@ func main() {
 	userService := service.NewUserService(userRepo, jwtSecret)
 	userHandler := handler.NewUserHandler(userService)
 
+	produkRepo := repository.NewProdukRepository(db)
+	produkService := service.NewProdukService(produkRepo)
+	produkHandler := handler.NewProdukHandler(produkService)
+
+	orderRepo := repository.NewOrderRepository(db)
+	orderService := service.NewOrderService(orderRepo, produkRepo, db)
+	orderHandler := handler.NewOrderHandler(orderService)
+
 	http.HandleFunc("/register", userHandler.Register)
 	http.HandleFunc("/login", userHandler.Login)
+
+	http.HandleFunc("GET /produk", produkHandler.GetAllProduk)
+
+	produkCreateHandler := http.HandlerFunc(produkHandler.CreateProduk)
+	protectedProdukCreate := handler.AuthMiddleware(handler.RoleMiddleware(produkCreateHandler, "petani"), userService, jwtSecret)
+	http.Handle("POST /produk", protectedProdukCreate)
+
+	produkByIdHandler := http.HandlerFunc(produkHandler.KelolaProdukById)
+	protectedProdukById := handler.AuthMiddleware(handler.RoleMiddleware(produkByIdHandler, "petani", "pembeli"), userService, jwtSecret) 
+	http.Handle("/produk/{id}", protectedProdukById)
+	
+	userManagementHandler := http.HandlerFunc(userHandler.KelolaAkun)
+	protectedUserManagement := handler.AuthMiddleware(userManagementHandler, userService, jwtSecret)
+	http.Handle("/users/{id}", protectedUserManagement)
+
+	orderCreateHandler := http.HandlerFunc(orderHandler.CreateOrder)
+	protectedOrderCreate := handler.AuthMiddleware(handler.RoleMiddleware(orderCreateHandler, "pembeli"), userService, jwtSecret)
+	http.Handle("POST /orders", protectedOrderCreate)
+
+	orderGetHandler := http.HandlerFunc(orderHandler.GetOrderById)
+	protectedOrderGet := handler.AuthMiddleware(orderGetHandler, userService, jwtSecret)
+	http.Handle("GET /orders/{id}", protectedOrderGet)
 
 	log.Println("Server berjalan di http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
