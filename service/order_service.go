@@ -44,7 +44,7 @@ func (s *orderService) CreateOrder(ctx context.Context, pembeliId int64, input C
 	}
 	defer tx.Rollback()
 
-	var totalHarga float64
+	var totalHarga int64
 	var items []model.OrderItem
 
 	for _, itemInput := range input.Items {
@@ -60,10 +60,10 @@ func (s *orderService) CreateOrder(ctx context.Context, pembeliId int64, input C
 			OrderId:           0,
 			ProdukId:          itemInput.ProdukID,
 			Jumlah:            int64(itemInput.Jumlah),
-			HargaKetikaDIBeli: float64(produk.Harga),
+			HargaKetikaDIBeli: float64(produk.Harga), // Tetap float64 jika diperlukan untuk presisi
 		}
 		items = append(items, item)
-		totalHarga += float64(produk.Harga) * float64(itemInput.Jumlah)
+		totalHarga += produk.Harga * int64(itemInput.Jumlah)
 
 		produk.Stok -= int(itemInput.Jumlah)
 		err = s.produkRepo.UpdateStok(ctx, tx, produk)
@@ -74,10 +74,10 @@ func (s *orderService) CreateOrder(ctx context.Context, pembeliId int64, input C
 
 	order := &model.Order{
 		PembeliId:  pembeliId,
-		TotalHarga: int64(totalHarga),
+		TotalHarga: totalHarga,
 		Status:     "pending",
 		CreatedAt:  time.Now(),
-		Barang2:    items,
+		Items:      items,
 	}
 
 	orderId, err := s.orderRepo.CreateHeader(ctx, tx, order)

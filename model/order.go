@@ -8,5 +8,5 @@ type Order struct {
 	TotalHarga int64       `json:"total_harga" db:"total_harga"`
 	Status     string      `json:"status" db:"status"`
 	CreatedAt  time.Time   `json:"created_at" db:"created_at"`
-	Barang2    []OrderItem `json:"barang2" db:"-"`
+	Items      []OrderItem `json:"items" db:"-"`
 }

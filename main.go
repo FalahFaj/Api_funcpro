@@ -48,9 +48,9 @@ func main() {
 	http.Handle("POST /produk", protectedProdukCreate)
 
 	produkByIdHandler := http.HandlerFunc(produkHandler.KelolaProdukById)
-	protectedProdukById := handler.AuthMiddleware(handler.RoleMiddleware(produkByIdHandler, "petani", "pembeli"), userService, jwtSecret) 
+	protectedProdukById := handler.AuthMiddleware(handler.RoleMiddleware(produkByIdHandler, "petani", "pembeli"), userService, jwtSecret)
 	http.Handle("/produk/{id}", protectedProdukById)
-	
+
 	userManagementHandler := http.HandlerFunc(userHandler.KelolaAkun)
 	protectedUserManagement := handler.AuthMiddleware(userManagementHandler, userService, jwtSecret)
 	http.Handle("/users/{id}", protectedUserManagement)
@@ -63,6 +63,8 @@ func main() {
 	protectedOrderGet := handler.AuthMiddleware(orderGetHandler, userService, jwtSecret)
 	http.Handle("GET /orders/{id}", protectedOrderGet)
 
-	log.Println("Server berjalan di http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	port := "8080"
+	addr := ":" + port
+	log.Printf("Server berjalan di http://localhost:%s\n", port)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
