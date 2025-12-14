@@ -63,7 +63,7 @@ func main() {
 	protectedOrderGet := handler.AuthMiddleware(orderGetHandler, userService, jwtSecret)
 	http.Handle("GET /orders/{id}", protectedOrderGet)
 
-	port := "8080"
+	port := "8030"
 	addr := ":" + port
 	log.Printf("Server berjalan di http://localhost:%s\n", port)
 	log.Fatal(http.ListenAndServe(addr, nil))

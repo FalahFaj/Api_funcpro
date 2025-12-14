@@ -60,7 +60,7 @@ func (s *orderService) CreateOrder(ctx context.Context, pembeliId int64, input C
 			OrderId:           0,
 			ProdukId:          itemInput.ProdukID,
 			Jumlah:            int64(itemInput.Jumlah),
-			HargaKetikaDIBeli: float64(produk.Harga), // Tetap float64 jika diperlukan untuk presisi
+			HargaKetikaDIBeli: float64(produk.Harga), 
 		}
 		items = append(items, item)
 		totalHarga += produk.Harga * int64(itemInput.Jumlah)
@@ -87,12 +87,15 @@ func (s *orderService) CreateOrder(ctx context.Context, pembeliId int64, input C
 
 	order.Id = orderId
 
-	for _, item := range items {
-		item.OrderId = orderId
-		err = s.orderRepo.CreateItem(ctx, tx, &item)
+	for i := range order.Items {
+		order.Items[i].OrderId = orderId
+
+		itemId, err := s.orderRepo.CreateItem(ctx, tx, &order.Items[i])
 		if err != nil {
 			return nil, err
 		}
+
+		order.Items[i].Id = itemId
 	}
 
 	err = tx.Commit()

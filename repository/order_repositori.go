@@ -13,7 +13,7 @@ type OrderRepository interface {
 	Update(ctx context.Context, order *model.Order) error
 	Delete(ctx context.Context, id int64) error
 	CreateHeader(ctx context.Context, tx *sql.Tx, order *model.Order) (int64, error)
-	CreateItem(ctx context.Context, tx *sql.Tx, item *model.OrderItem) error
+	CreateItem(ctx context.Context, tx *sql.Tx, item *model.OrderItem) (int64, error)
 }
 
 type orderRepository struct {
@@ -65,6 +65,22 @@ func (r *orderRepository) GetOrderById(ctx context.Context, id int64) (*model.Or
 	if err != nil {
 		return nil, err
 	}
+
+	queryItems := `SELECT id, order_id, produk_id, jumlah, harga_ketika_dibeli FROM order_items WHERE order_id = $1`
+	rows, err := r.db.QueryContext(ctx, queryItems, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item model.OrderItem
+		if err := rows.Scan(&item.Id, &item.OrderId, &item.ProdukId, &item.Jumlah, &item.HargaKetikaDIBeli); err != nil {
+			return nil, err
+		}
+		order.Items = append(order.Items, item)
+	}
+
 	return &order, nil
 }
 
@@ -99,11 +115,12 @@ func (r *orderRepository) CreateHeader(ctx context.Context, tx *sql.Tx, order *m
 	return id, nil
 }
 
-func (r *orderRepository) CreateItem(ctx context.Context, tx *sql.Tx, item *model.OrderItem) error {
-	query := `INSERT INTO order_items (order_id, produk_id, jumlah, harga_ketika_dibeli) VALUES ($1, $2, $3, $4)`
-	_, err := tx.ExecContext(ctx, query, item.OrderId, item.ProdukId, item.Jumlah, item.HargaKetikaDIBeli)
+func (r *orderRepository) CreateItem(ctx context.Context, tx *sql.Tx, item *model.OrderItem) (int64, error) {
+	query := `INSERT INTO order_items (order_id, produk_id, jumlah, harga_ketika_dibeli) VALUES ($1, $2, $3, $4) RETURNING id`
+	var id int64
+	err := tx.QueryRowContext(ctx, query, item.OrderId, item.ProdukId, item.Jumlah, item.HargaKetikaDIBeli).Scan(&id)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return id, nil
 }
