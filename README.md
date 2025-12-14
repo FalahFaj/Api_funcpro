@@ -57,7 +57,7 @@ Setelah semua konfigurasi selesai, jalankan server dengan perintah berikut:
 go run .
 ```
 
-Server akan berjalan di `http://localhost:8080`.
+Server akan berjalan di `http://localhost:8030`.
 
 ---
-*Dibuat oleh Kelompok 12 - Pemrograman Fungsional.*
+*Dibuat oleh Kelompok 11 - Pemrograman Fungsional.*
