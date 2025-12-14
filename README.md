@@ -1,4 +1,4 @@
-# Proyek API E-Commerce Pertanian (FuncPro - Kelompok 12)
+# Proyek API E-Commerce Pertanian (FuncPro - Kelompok 11)
 
 Ini adalah projek API yang simpel aja, penting selesai
 
